@@ -1,10 +1,11 @@
 package com.amigoscode.testing.utils;
 
-import org.hibernate.validator.constraintvalidators.RegexpURLValidator;
+
 
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class PhoneNumberValidator implements Predicate<String> {
 
@@ -19,6 +20,6 @@ public class PhoneNumberValidator implements Predicate<String> {
             throw  new IllegalStateException(String.format("phone number: %s is invalid",
                     phoneNumber));
         }
-        return isValid;
+        return true;
     }
 }

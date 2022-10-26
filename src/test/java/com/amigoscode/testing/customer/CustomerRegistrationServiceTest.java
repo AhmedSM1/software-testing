@@ -1,5 +1,6 @@
 package com.amigoscode.testing.customer;
 
+import com.amigoscode.testing.utils.PhoneNumberValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -18,6 +19,8 @@ class CustomerRegistrationServiceTest {
     private CustomerRegistrationService underTest;
     @Mock
     private CustomerRepository customerRepository;
+    @Mock
+    private PhoneNumberValidator phoneNumberValidator;
 
     @Captor
     private ArgumentCaptor<Customer> customerArgumentCaptor;
@@ -26,15 +29,17 @@ class CustomerRegistrationServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        underTest = new CustomerRegistrationService(customerRepository);
+        underTest = new CustomerRegistrationService(customerRepository,phoneNumberValidator);
     }
 
     @Test
     void itShouldRegisterNewCustomer(){
         //Given
-        Customer mockCustomer = new Customer(UUID.randomUUID(),"Ahmed","0505558844");
-        when(customerRepository.selectCustomerByPhoneNumber("0505558844"))
+        String phoneNumber = "0505558844";
+        Customer mockCustomer = new Customer(UUID.randomUUID(),"Ahmed", phoneNumber);
+        when(customerRepository.selectCustomerByPhoneNumber(phoneNumber))
                 .thenReturn(Optional.empty());
+        when(phoneNumberValidator.test(phoneNumber)).thenReturn(true);
         //When
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(mockCustomer);
         underTest.registerNewCustomer(request);
@@ -47,6 +52,7 @@ class CustomerRegistrationServiceTest {
     @Test
     void itShouldNotSaveCustomerWhenPhoneNumberExists() {
         String phoneNumber = "0505558844";
+        when(phoneNumberValidator.test(phoneNumber)).thenReturn(true);
         Customer mockCustomer = new Customer(UUID.randomUUID(),"Ahmed", phoneNumber);
         when(customerRepository.selectCustomerByPhoneNumber(phoneNumber))
                 .thenReturn(Optional.of(mockCustomer));
@@ -59,6 +65,7 @@ class CustomerRegistrationServiceTest {
     void itShouldThrowWhenPhoneNumberExists() {
         //Given
         String phoneNumber = "0505558844";
+        when(phoneNumberValidator.test(phoneNumber)).thenReturn(true);
         Customer customer = new Customer(UUID.randomUUID(),"Ahmed", phoneNumber);
         Customer customerTwo = new Customer(UUID.randomUUID(),"Ali", phoneNumber);
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(customer);
@@ -77,8 +84,10 @@ class CustomerRegistrationServiceTest {
     @Test
     void itShouldSaveCustomerWhenIdIsNull() {
         //Given
-        Customer mockCustomer = new Customer(null,"Ahmed","0505558844");
-        when(customerRepository.selectCustomerByPhoneNumber("0505558844"))
+        String phoneNumber = "0505558844";
+        Customer mockCustomer = new Customer(null,"Ahmed", phoneNumber);
+        when(phoneNumberValidator.test(phoneNumber)).thenReturn(true);
+        when(customerRepository.selectCustomerByPhoneNumber(phoneNumber))
                 .thenReturn(Optional.empty());
         //When
         CustomerRegistrationRequest request = new CustomerRegistrationRequest(mockCustomer);
