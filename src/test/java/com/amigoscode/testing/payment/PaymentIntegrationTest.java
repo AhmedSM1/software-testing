@@ -1,4 +1,4 @@
-package com.amigoscode.testing.payment.stripe;
+package com.amigoscode.testing.payment;
 
 import com.amigoscode.testing.customer.Customer;
 import com.amigoscode.testing.customer.CustomerRegistrationRequest;

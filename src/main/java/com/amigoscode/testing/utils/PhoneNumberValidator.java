@@ -2,11 +2,13 @@ package com.amigoscode.testing.utils;
 
 
 
+import org.springframework.stereotype.Component;
+
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+@Component
 public class PhoneNumberValidator implements Predicate<String> {
 
     private static final Pattern PATTERN = Pattern.compile(
@@ -15,11 +17,7 @@ public class PhoneNumberValidator implements Predicate<String> {
     @Override
     public boolean test(String phoneNumber) {
         Matcher matcher = PATTERN.matcher(phoneNumber.trim());
-        boolean isValid = matcher.matches();
-        if (!isValid){
-            throw  new IllegalStateException(String.format("phone number: %s is invalid",
-                    phoneNumber));
-        }
-        return true;
+        return matcher.matches();
     }
+
 }

@@ -80,6 +80,23 @@ class CustomerRegistrationServiceTest {
         then(customerRepository).should(never()).save(any());
     }
 
+    @Test
+    void itShouldSaveCustomerWhenPhoneNumberIsNotValid() {
+        //Given
+        String phoneNumber = "12";
+        Customer mockCustomer = new Customer(UUID.randomUUID(),"Ahmed", phoneNumber);
+        when(phoneNumberValidator.test(phoneNumber)).thenReturn(false);
+        when(customerRepository.selectCustomerByPhoneNumber(phoneNumber))
+                .thenReturn(Optional.empty());
+        //When
+        CustomerRegistrationRequest request = new CustomerRegistrationRequest(mockCustomer);
+        //Then
+        assertThatThrownBy(() -> underTest.registerNewCustomer(request))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining(String.format("Phone number: %s is not valid",phoneNumber));
+
+        then(customerRepository).should(never()).save(any());
+    }
 
     @Test
     void itShouldSaveCustomerWhenIdIsNull() {

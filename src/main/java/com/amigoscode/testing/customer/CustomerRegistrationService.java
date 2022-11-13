@@ -21,7 +21,8 @@ public class CustomerRegistrationService {
 
     public void registerNewCustomer(CustomerRegistrationRequest request) throws IllegalStateException {
         String phoneNumber = request.getCustomer().getPhoneNumber();
-        phoneNumberValidator.test(phoneNumber);
+        checkNumberValidity(phoneNumber);
+
         Optional<Customer> customerByPhoneNumber = customerRepository
                 .selectCustomerByPhoneNumber(phoneNumber);
         if (customerByPhoneNumber.isPresent()){
@@ -37,7 +38,9 @@ public class CustomerRegistrationService {
         customerRepository.save(request.getCustomer());
     }
 
-
-
-
+    void checkNumberValidity(String phoneNumber){
+        if (!phoneNumberValidator.test(phoneNumber)){
+            throw new IllegalStateException(String.format("Phone number: %s is not valid",phoneNumber));
+        }
+    }
 }
